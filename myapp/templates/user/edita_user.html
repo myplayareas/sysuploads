@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block title %}
+  Edit User
+{% endblock %}
+
+{% block content %}
+
+<form method="POST" class="form-user">
+  {{ form.hidden_tag() }}
+  <h1 class="h3 mb-3 font-weight-normal">
+      Edita usuario {{ user.username }}
+  </h1>
+  <br>
+  {{ form.username.label() }}
+  {{ form.username(class="form-control") }}
+
+  {{ form.email_address.label() }}
+  {{ form.email_address(class="form-control") }}
+  
+  <br>
+  {{ form.submit(class="btn btn-lg btn-block btn-primary", value="Update") }}
+  <br>
+
+</form>
+
+{% endblock %}
