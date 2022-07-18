@@ -51,11 +51,13 @@ def edit_user(id):
 @app.route('/loadusers')
 @login_required
 def load_users():
+    users = usersCollection.list_all_users()
     try: 
-        df_users = pd.read_csv('users.csv')
-        for index, row in df_users.iterrows():
-            user_to_create = User(username=row['username'], email_address=row['email_address'], password=row['password'])
-            usersCollection.insert_user(user_to_create)
+        if (len(users) <= 1): 
+            df_users = pd.read_csv('users.csv')
+            for index, row in df_users.iterrows():
+                user_to_create = User(username=row['username'], email_address=row['email_address'], password=row['password'])
+                usersCollection.insert_user(user_to_create)
     except Exception as e:
         print(f'Erro popula_usuarios: {e}')
     return redirect(url_for('pagination_page'))

@@ -20,6 +20,7 @@ app.config['SECRET_KEY'] = 'ec9439cfc6c796ae2029594d'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['UPLOAD_FOLDER_THUNBNAILS'] = UPLOAD_FOLDER_THUMBNAILS
 app.config['ALLOWED_EXTENSIONS'] = ALLOWED_EXTENSIONS
+app.config['MAX_CONTENT_LENGTH'] = 5 * 1000 * 1000
 
 # Cria a instancia ORM de banco de dados e associa aplicacao (app)
 db = SQLAlchemy(app)
