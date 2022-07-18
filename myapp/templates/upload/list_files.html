@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block title %}
+  All Images
+{% endblock %}
+
+{% block content %}
+
+<div class="container">
+  <div class="table-responsive">
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th>Name</th>   
+          <th>Thumbnail</th>       
+        </tr>
+      </thead>
+      <tbody>
+        {% for image in images %}
+        <tr>
+          <td>{{ image }}</td>              
+          {% set myfilename = 'uploads/thumbnails/' + image  %}
+          <td> <a href="{{ url_for('download_file', name=image) }}"><img src="{{ url_for('static', filename=myfilename) }}" alt="Thumbnail"></a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endblock %}
