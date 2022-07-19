@@ -5,22 +5,32 @@
 
 {% block content %}
 
-<form method="POST" class="form-user">
-  {{ form.hidden_tag() }}
-  <h1 class="h3 mb-3 font-weight-normal">
-      Edita usuario {{ user.username }}
-  </h1>
-  <br>
-  {{ form.username.label() }}
-  {{ form.username(class="form-control") }}
+<div class="card">
+  <div class="card-header">
+    <!-- Conteudo do cabecalho do card-->
+    Edit User
+  </div>
+  <div class="card-body">
+    <!-- Conteudo do corpo do card-->
+    <form method="POST" class="form-user">
+      {{ form.hidden_tag() }}
+      <h1 class="h3 mb-3 font-weight-normal">
+          Edita usuario {{ user.username }}
+      </h1>
+      <br>
+      {{ form.username.label() }}
+      {{ form.username(class="form-control") }}
 
-  {{ form.email_address.label() }}
-  {{ form.email_address(class="form-control") }}
-  
-  <br>
-  {{ form.submit(class="btn btn-lg btn-block btn-primary", value="Update") }}
-  <br>
+      {{ form.email_address.label() }}
+      {{ form.email_address(class="form-control") }}
+      
+      <br>
+      {{ form.submit(class="btn btn-lg btn-block btn-primary", value="Update") }}
+      <br>
 
-</form>
+    </form>
+
+  </div>
+</div>     
 
 {% endblock %}

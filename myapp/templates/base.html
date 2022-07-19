@@ -22,20 +22,20 @@
       <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
 
     <nav class="navbar navbar-expand-md navbar-light">
-      <a class="navbar-brand" href="{{ url_for('myapp_page') }} ">SysUpload</a>
+      <a class="navbar-brand" href="{{ url_for('dashboard_page') }} ">SysUpload</a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
           {% if current_user.is_authenticated %}
-            <ul class="navbar-nav" mr-auto>
+            <ul class="navbar-nav mr-auto">
                 <li class="nav-item">
-                     <a class="nav-link" href="{{ url_for('pagination_page') }}">Users</a>
+                     <a class="nav-link" href="{{ url_for('pagination_page') }}">Manage Users</a>
                 </li>
                 <!-- Dropdown -->
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbardrop1" data-toggle="dropdown">
-                    Upload Images
+                    Public Images
                     </a>
                     <div class="dropdown-menu">
                         <a class="dropdown-item" href="{{ url_for('upload_page') }}">Simple Upload</a>
@@ -44,7 +44,7 @@
                     </div>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('list_files_page') }}">List Images</a>
+                    <a class="nav-link" href="{{ url_for('pagination_list_files_page') }}">List Public Images</a>
                 </li>                
             </ul>
             <ul class="navbar-nav">
@@ -54,12 +54,14 @@
                         {{ current_user.prettier_budget }}
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link">Welcome, {{ current_user.username }}</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('logout_page') }}">Logout</a>
-                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbardropprofile" data-toggle="dropdown">Welcome, {{ current_user.username }}</a>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" href="#">My Profile</a>
+                        <a class="dropdown-item" href="{{ url_for('logout_page') }}">Logout</a>
+                    </div>
+                </li> 
+                <img src="{{ url_for('static', filename='img/anonymous2.png') }}" class="rounded-circle" style="width: 50px;" alt="Avatar">      
             </ul>
           {% else %}
             <ul class="navbar-nav">
@@ -68,7 +70,7 @@
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{{ url_for('register_page') }}">Register</a>
-                </li>
+                </li>                
             </ul>
           {% endif %}
       </div>

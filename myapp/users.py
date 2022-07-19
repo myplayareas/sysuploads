@@ -5,6 +5,7 @@ from myapp.dao import Users, User
 from flask_paginate import Pagination, get_page_args
 import pandas as pd
 from myapp.forms import UserForm
+from myapp.uploads import list_images
 
 usersCollection = Users()
 users = usersCollection.list_all_users()
@@ -61,3 +62,12 @@ def load_users():
     except Exception as e:
         print(f'Erro popula_usuarios: {e}')
     return redirect(url_for('pagination_page'))
+
+@app.route('/dashboard')
+@login_required
+def dashboard_page():
+    usersCollection = Users()
+    users = usersCollection.list_all_users()
+    total_users = len(users)
+    total_images = len(list_images)
+    return render_template('user/dashboard.html', qtd_users=total_users, qtd_images=total_images)

@@ -5,14 +5,33 @@ from werkzeug.utils import secure_filename
 import os
 from os import listdir
 from os.path import isfile, join
-
 from PIL import Image
+from flask_paginate import Pagination, get_page_args
 
 list_images = []
 
 onlyfiles = [f for f in listdir(app.config['UPLOAD_FOLDER']) if isfile(join(app.config['UPLOAD_FOLDER'], f))]
 for each in onlyfiles:
     list_images.append(each)
+
+class MyImage: # This represents your class
+  def __init__(self, id, name):
+    self.id = id
+    self.name = name
+
+def convert_to_list_objects(list_images):
+  list_objects_images = []
+  for index, each in enumerate(list_images):
+    elemento = MyImage(index+1, each)
+    list_objects_images.append(elemento)
+  return list_objects_images
+
+# Carrega a lista de objetos images
+images = convert_to_list_objects(list_images)
+
+# retorna a paginacao da lista de objetos images
+def get_images(offset=0, per_page=10, images=images):
+    return images[offset: offset + per_page]
 
 def tnails(filename, filename_path, thumbnail_path):
     try:
@@ -103,7 +122,7 @@ def download_file(name):
 def dowload_private_file(filename):
     return send_from_directory(os.path.join(app.config['UPLOAD_FOLDER'], current_user.get_id()), filename)
 
-@app.route('/images')
+@app.route('/allimages')
 @login_required
 def list_files_page():
     images = list_images
@@ -112,3 +131,12 @@ def list_files_page():
 @app.errorhandler(413)
 def too_large(error):
     return "File is too large", 413
+
+@app.route('/images')
+@login_required
+def pagination_list_files_page():
+    page, per_page, offset = get_page_args(page_parameter='page', per_page_parameter='per_page')
+    total = len(images)
+    pagination_images = get_images(offset=offset, per_page=per_page, images=images)
+    pagination = Pagination(page=page, per_page=per_page, total=total, css_framework='bootstrap4')
+    return render_template('upload/pagination_list_files.html', images=pagination_images, page=page, per_page=per_page, pagination=pagination)

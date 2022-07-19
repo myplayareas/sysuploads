@@ -37,7 +37,7 @@ def login_page():
             login_user(attempted_user)
             msg = f'Success! You are logged in as: {attempted_user.username}'
             flash(msg, category='success')
-            return redirect(url_for('myapp_page'))
+            return redirect(url_for('dashboard_page'))
         else:
             flash('Username and password are not match! Please try again', category='danger')
 
