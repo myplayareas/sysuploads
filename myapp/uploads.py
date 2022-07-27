@@ -8,17 +8,33 @@ from os.path import isfile, join
 from PIL import Image
 from flask_paginate import Pagination, get_page_args
 
-list_images = []
-
-onlyfiles = [f for f in listdir(app.config['UPLOAD_FOLDER']) if isfile(join(app.config['UPLOAD_FOLDER'], f))]
-for each in onlyfiles:
-    list_images.append(each)
+# path da aplicacao
+USER_PATH = '/Users/armandosoaressousa/git/sysuploads'
 
 class MyImage: # This represents your class
   def __init__(self, id, name):
     self.id = id
     self.name = name
 
+def user_directory(path_temp, user_id):
+    user_path = path_temp + '/' + str(user_id)
+
+    if os.path.exists(user_path):
+        return user_path
+    else: 
+        os.makedirs(user_path)
+    return user_path 
+
+# Carrega uma lista atualzada com os nomes dos arquivos da pasta UPLOAD_FOLDER
+def update_list_images():
+    path_user_images = user_directory(app.config['UPLOAD_FOLDER'], current_user.get_id())
+    list_images = []
+    onlyfiles = [f for f in listdir(path_user_images) if isfile(join(path_user_images, f))]
+    for each in onlyfiles:
+        list_images.append(each)
+    return list_images
+
+# Converte lista de nomes de arquivos em lista de objetos MyImage
 def convert_to_list_objects(list_images):
   list_objects_images = []
   for index, each in enumerate(list_images):
@@ -26,22 +42,18 @@ def convert_to_list_objects(list_images):
     list_objects_images.append(elemento)
   return list_objects_images
 
-# Carrega a lista de objetos images
-images = convert_to_list_objects(list_images)
-
 # retorna a paginacao da lista de objetos images
-def get_images(offset=0, per_page=10, images=images):
+def get_images(offset=0, per_page=10, images=None):
     return images[offset: offset + per_page]
 
+# dado um arquivo cria o thumbnail correspondente e salva na pasta de thumbnails
 def tnails(filename, filename_path, thumbnail_path):
     try:
         filename_complete = filename_path + '/' + filename
-        print(filename_complete)
         image = Image.open(filename_complete)
         image.thumbnail((90,90))        
         new_thumbnail = thumbnail_path + '/' + filename
         image.save(new_thumbnail)
-        print(f'{new_thumbnail} saved with success!')
     except IOError as io:
         raise Exception(f'Erro - {io}')
 
@@ -57,14 +69,15 @@ def upload_page():
     if uploaded_file.filename != '':
         try: 
             filename_secure = secure_filename(uploaded_file.filename)
-            uploaded_file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename_secure))
-            tnails(filename_secure, app.config['UPLOAD_FOLDER'], app.config['UPLOAD_FOLDER_THUNBNAILS'])
-            list_images.append(filename_secure)
+            path_to_save_image = user_directory(app.config['UPLOAD_FOLDER'], current_user.get_id())
+            uploaded_file.save(os.path.join(path_to_save_image, filename_secure))
+            path_to_save_image_thumbnail = user_directory(app.config['UPLOAD_FOLDER_THUMBNAILS'], current_user.get_id())
+            tnails(filename_secure, path_to_save_image, path_to_save_image_thumbnail)
             flash(f'Upload {filename_secure} accomplished with success!', category='success')
         except Exception as e:
             flash(f'Error in Upload - {e}', category='danger')
 
-    return redirect(url_for('list_files_page', images=list_images))
+    return redirect(url_for('list_files_page'))
 
 @app.route('/uploadsprogress', methods=['GET'])
 @login_required
@@ -78,13 +91,14 @@ def upload_progress():
     uploaded_file = request.files['file']
     try: 
         filename_secure = secure_filename(uploaded_file.filename)
-        uploaded_file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename_secure))
-        tnails(filename_secure, app.config['UPLOAD_FOLDER'], app.config['UPLOAD_FOLDER_THUNBNAILS'])
-        list_images.append(filename_secure)
+        path_to_save_image = user_directory(app.config['UPLOAD_FOLDER'], current_user.get_id())
+        uploaded_file.save(os.path.join(path_to_save_image, filename_secure))
+        path_to_save_image_thumbnail = user_directory(app.config['UPLOAD_FOLDER_THUMBNAILS'], current_user.get_id())
+        tnails(filename_secure, path_to_save_image, path_to_save_image_thumbnail)
         flash(f'Upload {filename_secure} accomplished with success!', category='success')
     except Exception as e:
         flash(f'Error in Upload - {e}', category='danger')
-        return redirect(url_for('list_files_page', images=list_images))
+        return redirect(url_for('list_files_page'))
 
     return '', 204
 
@@ -100,22 +114,23 @@ def upload_classic_progress():
     uploaded_file = request.files['uploadFile']
     try: 
         filename_secure = secure_filename(uploaded_file.filename)
-        uploaded_file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename_secure))
+        path_to_save_image = user_directory(app.config['UPLOAD_FOLDER'], current_user.get_id())
+        uploaded_file.save(os.path.join(path_to_save_image, filename_secure))
         filenameimage = filename_secure
-        tnails(filename_secure, app.config['UPLOAD_FOLDER'], app.config['UPLOAD_FOLDER_THUNBNAILS'])
-        list_images.append(filename_secure)
+        path_to_save_image_thumbnail = user_directory(app.config['UPLOAD_FOLDER_THUMBNAILS'], current_user.get_id())
+        tnails(filename_secure, path_to_save_image, path_to_save_image_thumbnail)
         msg = f'Upload {filename_secure} accomplished with success!'
     except Exception as e:
-        #msg = f'Error in Upload - {e}'
         flash(f'Error in Upload - {e}', category='danger')
-        return redirect(url_for('list_files_page', images=list_images))
+        return redirect(url_for('list_files_page'))
 
     return jsonify({'htmlresponse': render_template('upload/response.html', msg=msg, filenameimage=filenameimage)})
 
-@app.route('/uploads/<name>')
+@app.route('/uploads/<int:id>/<name>')
 @login_required
-def download_file(name):
-    return send_from_directory(app.config["UPLOAD_FOLDER"], name)
+def download_file(id, name):
+    path_to_save_image = user_directory(app.config['UPLOAD_FOLDER'], str(id))
+    return send_from_directory(path_to_save_image, name)
 
 @app.route('/uploads/<int:id>/<filename>')
 @login_required
@@ -125,7 +140,8 @@ def dowload_private_file(filename):
 @app.route('/allimages')
 @login_required
 def list_files_page():
-    images = list_images
+    # Carrega a lista de objetos images
+    images = convert_to_list_objects(update_list_images())
     return render_template('upload/list_files.html', images=images)
 
 @app.errorhandler(413)
@@ -136,7 +152,28 @@ def too_large(error):
 @login_required
 def pagination_list_files_page():
     page, per_page, offset = get_page_args(page_parameter='page', per_page_parameter='per_page')
+    # Carrega a lista de objetos images
+    images = convert_to_list_objects(update_list_images())
+
     total = len(images)
     pagination_images = get_images(offset=offset, per_page=per_page, images=images)
     pagination = Pagination(page=page, per_page=per_page, total=total, css_framework='bootstrap4')
     return render_template('upload/pagination_list_files.html', images=pagination_images, page=page, per_page=per_page, pagination=pagination)
+
+@app.route("/deleteimage/<int:id>/<name>")
+@login_required
+def delete_image(id, name):
+
+    path_saved_image = user_directory(app.config['UPLOAD_FOLDER'], id)
+    path_saved_image_thumbnail = user_directory(app.config['UPLOAD_FOLDER_THUMBNAILS'], id)
+    
+    image_name_uploads = path_saved_image +  '/' + name
+    image_name_thubnails = path_saved_image_thumbnail + '/' + name
+
+    if os.path.exists(image_name_uploads):
+        os.remove(image_name_uploads)
+        os.remove(image_name_thubnails)
+        flash(f'{name} deleted successfully!', category='success')
+    else:
+        flash(f'The file {name} does not exist!', category='danger')        
+    return redirect(url_for('pagination_list_files_page'))

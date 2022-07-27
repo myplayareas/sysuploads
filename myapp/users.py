@@ -5,7 +5,7 @@ from myapp.dao import Users, User
 from flask_paginate import Pagination, get_page_args
 import pandas as pd
 from myapp.forms import UserForm
-from myapp.uploads import list_images
+from myapp.uploads import update_list_images
 
 usersCollection = Users()
 users = usersCollection.list_all_users()
@@ -69,5 +69,5 @@ def dashboard_page():
     usersCollection = Users()
     users = usersCollection.list_all_users()
     total_users = len(users)
-    total_images = len(list_images)
+    total_images = len(update_list_images())
     return render_template('user/dashboard.html', qtd_users=total_users, qtd_images=total_images)

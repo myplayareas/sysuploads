@@ -1,2 +1,3 @@
 <p><b>{{ msg }}</b></p>
-<img src="/uploads/{{ filenameimage }}" class="img-thumbnail" width="300" height="250" />
+{% set myfilepath = current_user.id|string + '/' + filenameimage %}
+<img src="/uploads/{{ myfilepath }}" class="img-thumbnail" width="300" height="250" />

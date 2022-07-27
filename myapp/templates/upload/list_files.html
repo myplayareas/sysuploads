@@ -17,9 +17,11 @@
       <tbody>
         {% for image in images %}
         <tr>
-          <td>{{ image }}</td>              
-          {% set myfilename = 'uploads/thumbnails/' + image  %}
-          <td> <a href="{{ url_for('download_file', name=image) }}"><img src="{{ url_for('static', filename=myfilename) }}" alt="Thumbnail"></a></td>
+          <td>{{ image.name }}</td>  
+          {% set user_id = current_user.id|string %}              
+          {% set myfilename = 'uploads/thumbnails/' +  user_id + '/' + image.name  %}
+          {% set myimagename = image.name %}
+          <td> <a href="{{ url_for('download_file', id=current_user.id, name=myimagename) }}"><img src="{{ url_for('static', filename=myfilename) }}" alt="Thumbnail"></a></td>
         </tr>
         {% endfor %}
       </tbody>

@@ -2,6 +2,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
+import os
 
 # Instancia principal da aplicacao (app)
 app = Flask(__name__)
@@ -9,16 +10,25 @@ app = Flask(__name__)
 # Nome do arquivo de banco de dados sqlite
 data_base = 'myapp.db'
 
-MAIN_PATH = '/Users/armandosoaressousa/git'
-UPLOAD_FOLDER = MAIN_PATH + '/sysuploads/myapp/static/uploads'
-UPLOAD_FOLDER_THUMBNAILS = MAIN_PATH + '/sysuploads/myapp/static/uploads/thumbnails'
+MAIN_PATH = os.path.abspath(os.getcwd())
+UPLOAD_FOLDER = MAIN_PATH + '/myapp/static/uploads'
+UPLOAD_FOLDER_THUMBNAILS = MAIN_PATH + '/myapp/static/uploads/thumbnails'
+PATH_MYAPP = MAIN_PATH + '/myapp'
+PATH_STATIC = MAIN_PATH + '/myapp/static'
+PATH_IMG = MAIN_PATH + '/myapp/static/img'
+
 ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
 
 # Configuracoes da instancia principal da aplicacao
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + data_base
 app.config['SECRET_KEY'] = 'ec9439cfc6c796ae2029594d'
+
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-app.config['UPLOAD_FOLDER_THUNBNAILS'] = UPLOAD_FOLDER_THUMBNAILS
+app.config['UPLOAD_FOLDER_THUMBNAILS'] = UPLOAD_FOLDER_THUMBNAILS
+app.config['PATH_MYAPP'] = PATH_MYAPP
+app.config['PATH_STATIC'] = PATH_STATIC
+app.config['PATH_IMG'] = PATH_IMG
+
 app.config['ALLOWED_EXTENSIONS'] = ALLOWED_EXTENSIONS
 app.config['MAX_CONTENT_LENGTH'] = 5 * 1000 * 1000
 
