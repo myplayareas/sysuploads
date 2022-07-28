@@ -7,9 +7,10 @@ from os import listdir
 from os.path import isfile, join
 from PIL import Image
 from flask_paginate import Pagination, get_page_args
+from myapp.dao import User, File, Users, Files
 
-# path da aplicacao
-USER_PATH = '/Users/armandosoaressousa/git/sysuploads'
+usersCollection = Users()
+filesCollection = Files()
 
 class MyImage: # This represents your class
   def __init__(self, id, name):
@@ -71,8 +72,11 @@ def upload_page():
             filename_secure = secure_filename(uploaded_file.filename)
             path_to_save_image = user_directory(app.config['UPLOAD_FOLDER'], current_user.get_id())
             uploaded_file.save(os.path.join(path_to_save_image, filename_secure))
+            file_to_save = File(name=filename_secure)
+            filesCollection.insert_file(file_to_save)
             path_to_save_image_thumbnail = user_directory(app.config['UPLOAD_FOLDER_THUMBNAILS'], current_user.get_id())
             tnails(filename_secure, path_to_save_image, path_to_save_image_thumbnail)
+            usersCollection.link_to_file(user_id=current_user.get_id(), file=file_to_save)
             flash(f'Upload {filename_secure} accomplished with success!', category='success')
         except Exception as e:
             flash(f'Error in Upload - {e}', category='danger')
@@ -93,8 +97,11 @@ def upload_progress():
         filename_secure = secure_filename(uploaded_file.filename)
         path_to_save_image = user_directory(app.config['UPLOAD_FOLDER'], current_user.get_id())
         uploaded_file.save(os.path.join(path_to_save_image, filename_secure))
+        file_to_save = File(name=filename_secure)
+        filesCollection.insert_file(file_to_save)
         path_to_save_image_thumbnail = user_directory(app.config['UPLOAD_FOLDER_THUMBNAILS'], current_user.get_id())
         tnails(filename_secure, path_to_save_image, path_to_save_image_thumbnail)
+        usersCollection.link_to_file(user_id=current_user.get_id(), file=file_to_save)
         flash(f'Upload {filename_secure} accomplished with success!', category='success')
     except Exception as e:
         flash(f'Error in Upload - {e}', category='danger')
@@ -117,8 +124,11 @@ def upload_classic_progress():
         path_to_save_image = user_directory(app.config['UPLOAD_FOLDER'], current_user.get_id())
         uploaded_file.save(os.path.join(path_to_save_image, filename_secure))
         filenameimage = filename_secure
+        file_to_save = File(name=filename_secure)
+        filesCollection.insert_file(file_to_save)
         path_to_save_image_thumbnail = user_directory(app.config['UPLOAD_FOLDER_THUMBNAILS'], current_user.get_id())
         tnails(filename_secure, path_to_save_image, path_to_save_image_thumbnail)
+        usersCollection.link_to_file(user_id=current_user.get_id(), file=file_to_save)
         msg = f'Upload {filename_secure} accomplished with success!'
     except Exception as e:
         flash(f'Error in Upload - {e}', category='danger')
@@ -171,9 +181,15 @@ def delete_image(id, name):
     image_name_thubnails = path_saved_image_thumbnail + '/' + name
 
     if os.path.exists(image_name_uploads):
-        os.remove(image_name_uploads)
-        os.remove(image_name_thubnails)
-        flash(f'{name} deleted successfully!', category='success')
+        try:
+            os.remove(image_name_uploads)
+            os.remove(image_name_thubnails)
+            file_to_delete = filesCollection.query_file_by_name(name)
+            usersCollection.unlink_file(user_id=current_user.get_id(), file=file_to_delete)
+            filesCollection.delete_file(file_to_delete)
+            flash(f'{name} deleted successfully!', category='success')
+        except Exception as e:
+            flash(f'Error {e} during deletion of {name}!', category='danger')
     else:
         flash(f'The file {name} does not exist!', category='danger')        
     return redirect(url_for('pagination_list_files_page'))
