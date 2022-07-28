@@ -38,3 +38,9 @@ Run the application via CLI:
 # Shell 1
 flask run --host=0.0.0.0 --port=5000
 ```
+
+Just in case some issue with some lib
+```bash
+pip install setuptools --upgrade
+```
+

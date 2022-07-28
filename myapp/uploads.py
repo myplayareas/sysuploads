@@ -8,6 +8,7 @@ from os.path import isfile, join
 from PIL import Image
 from flask_paginate import Pagination, get_page_args
 from myapp.dao import User, File, Users, Files
+from myapp import utils
 
 usersCollection = Users()
 filesCollection = Files()
@@ -194,3 +195,50 @@ def delete_image(id, name):
     else:
         flash(f'The file {name} does not exist!', category='danger')        
     return redirect(url_for('pagination_list_files_page'))
+
+@app.route('/images/qrcode')
+@login_required
+def pagination_list_files_qrcode_page():
+    page, per_page, offset = get_page_args(page_parameter='page', per_page_parameter='per_page')
+    # Carrega a lista de objetos images
+    images = convert_to_list_objects(update_list_images())
+
+    total = len(images)
+    pagination_images = get_images(offset=offset, per_page=per_page, images=images)
+    pagination = Pagination(page=page, per_page=per_page, total=total, css_framework='bootstrap4')
+    return render_template('upload/pagination_list_files_qrcode.html', images=pagination_images, page=page, per_page=per_page, pagination=pagination)
+
+@app.route("/uploads/users/<int:id>/images/qrcode/<name>")
+@login_required
+def generate_image_qrcode(id, name):
+    try: 
+        path_original_image = 'http://' + app.config['MY_IP'] + ':5000' + '/uploads/users/' + str(id) + '/images/' + name
+        path_saved_image_qrcode = user_directory(app.config['UPLOAD_FOLDER_QRCODES'], id)
+        image_name_qrcode = path_saved_image_qrcode + '/' + name
+        # Gera QR code
+        my_qrcode = utils.init_qrcode()
+        qr_input_data = utils.create_qrcode(my_qrcode, path_original_image)
+        utils.generate_qrcode_image(qr_input_data, image_name_qrcode)
+        flash(f'QRCode do {name} generated successfully!', category='success')
+    except Exception as e:
+        flash(f'Error {e} during qrcode of {name}!', category='danger')        
+
+    return redirect(url_for('pagination_list_files_with_qrcodes_page'))
+
+@app.route('/images/with/qrcodes')
+@login_required
+def pagination_list_files_with_qrcodes_page():
+    page, per_page, offset = get_page_args(page_parameter='page', per_page_parameter='per_page')
+    # Carrega a lista de objetos images
+    images = convert_to_list_objects(update_list_images())
+
+    total = len(images)
+    pagination_images = get_images(offset=offset, per_page=per_page, images=images)
+    pagination = Pagination(page=page, per_page=per_page, total=total, css_framework='bootstrap4')
+    return render_template('upload/pagination_list_files_with_qrcodes.html', images=pagination_images, page=page, per_page=per_page, pagination=pagination)
+
+@app.route('/uploads/users/<int:id>/images/qrcode/view/<name>')
+@login_required
+def download_file_qrcode(id, name):
+    path_saved_image_qrcode = user_directory(app.config['UPLOAD_FOLDER_QRCODES'], str(id))
+    return send_from_directory(path_saved_image_qrcode, name)

@@ -40,6 +40,17 @@
                         <a class="dropdown-item" href="{{ url_for('load_upload_progress_page') }}">Drag and Drop Upload</a>
                     </div>
                 </li>
+                <!-- Dropdown -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbardrop2" data-toggle="dropdown">
+                    QRCode
+                    </a>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" href="{{ url_for('pagination_list_files_with_qrcodes_page') }}">List My Images with QRCode</a>
+                        <a class="dropdown-item" href="{{ url_for('pagination_list_files_qrcode_page') }}">Generate QRcode</a>
+                    </div>
+                </li>
+
             </ul>
             <ul class="navbar-nav">
                 <li class="nav-item">

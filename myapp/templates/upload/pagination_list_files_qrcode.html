@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block title %}
+  All Images
+{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-header">
+    <!-- Conteudo do cabecalho do card-->
+    List all public images
+  </div>
+  <div class="card-body">
+    <!-- Conteudo do corpo do card-->
+    <div class="container">
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Name</th>   
+              <th>Thumbnail</th>       
+              <th>Options</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for image in images %}
+            <tr>
+              <td>{{ loop.index + (page - 1) * per_page }}</td>
+              <td>{{ image.name }}</td>
+              {% set user_id = current_user.id|string %}              
+              {% set myfilename = 'uploads/thumbnails/' +  user_id + '/' + image.name  %}
+              {% set myimagename = image.name %}
+              <td> <a href="{{ url_for('download_file', id=current_user.id, name=myimagename) }}"><img src="{{ url_for('static', filename=myfilename) }}" alt="Thumbnail"></a></td>
+              <td><a href="{{ url_for('generate_image_qrcode', id=current_user.id, name=myimagename)}}">Gerar QRCode</a> </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {{ pagination.links }}
+    </div>
+    
+  </div>
+</div>     
+
+{% endblock %}
