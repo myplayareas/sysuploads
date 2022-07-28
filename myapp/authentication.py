@@ -21,7 +21,7 @@ def register_page():
         login_user(user_to_create)
         next = request.args.get('next')
         if next is None or not next.startswith('/'):
-            next = url_for('myapp_page')
+            next = url_for('dashboard_page')
             msg = f"Account created successfully! You are now logged in as {user_to_create.username}"
             flash(msg, category='success')
         return redirect(next)

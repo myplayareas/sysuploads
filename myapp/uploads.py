@@ -136,7 +136,8 @@ def upload_classic_progress():
 
     return jsonify({'htmlresponse': render_template('upload/response.html', msg=msg, filenameimage=filenameimage)})
 
-@app.route('/uploads/<int:id>/<name>')
+# http://localhost:5000/uploads/users/5/images/armando.jpeg
+@app.route('/uploads/users/<int:id>/images/<name>')
 @login_required
 def download_file(id, name):
     path_to_save_image = user_directory(app.config['UPLOAD_FOLDER'], str(id))
@@ -170,7 +171,7 @@ def pagination_list_files_page():
     pagination = Pagination(page=page, per_page=per_page, total=total, css_framework='bootstrap4')
     return render_template('upload/pagination_list_files.html', images=pagination_images, page=page, per_page=per_page, pagination=pagination)
 
-@app.route("/deleteimage/<int:id>/<name>")
+@app.route("/uploads/users/<int:id>/images/delete/<name>")
 @login_required
 def delete_image(id, name):
 

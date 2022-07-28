@@ -72,7 +72,7 @@ def dashboard_page():
     total_images = len(update_list_images())
     return render_template('user/dashboard.html', qtd_images=total_images)
 
-@app.route('/dashboardadmin')
+@app.route('/dashboard/admin')
 @login_required
 def dashboard_admin_page():
     usersCollection = Users()
