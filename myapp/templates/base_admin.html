@@ -29,17 +29,23 @@
       <div class="collapse navbar-collapse" id="navbarNav">
           {% if current_user.is_authenticated %}
             <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                     <a class="nav-link" href="{{ url_for('pagination_page') }}">Manage Users</a>
+                </li>
                 <!-- Dropdown -->
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbardrop1" data-toggle="dropdown">
-                    My Images
+                    Public Images
                     </a>
                     <div class="dropdown-menu">
-                        <a class="dropdown-item" href="{{ url_for('pagination_list_files_page') }}">List My Images</a>
-                        <a class="dropdown-item" href="{{ url_for('load_upload_classic_progress_page') }}">Upload Image</a>
+                        <a class="dropdown-item" href="{{ url_for('upload_page') }}">Simple Upload</a>
+                        <a class="dropdown-item" href="{{ url_for('load_upload_classic_progress_page') }}">Classic Progress Upload</a>
                         <a class="dropdown-item" href="{{ url_for('load_upload_progress_page') }}">Drag and Drop Upload</a>
                     </div>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('pagination_list_files_page') }}">List Public Images</a>
+                </li>                
             </ul>
             <ul class="navbar-nav">
                 <li class="nav-item">

@@ -70,4 +70,13 @@ def dashboard_page():
     users = usersCollection.list_all_users()
     total_users = len(users)
     total_images = len(update_list_images())
-    return render_template('user/dashboard.html', qtd_users=total_users, qtd_images=total_images)
+    return render_template('user/dashboard.html', qtd_images=total_images)
+
+@app.route('/dashboardadmin')
+@login_required
+def dashboard_admin_page():
+    usersCollection = Users()
+    users = usersCollection.list_all_users()
+    total_users = len(users)
+    total_images = len(update_list_images())
+    return render_template('user/dashboard_admin.html', qtd_users=total_users, qtd_images=total_images)

@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'base_admin.html' %}
 {% block title %}
   My Dashboard
 {% endblock %}
@@ -13,6 +13,15 @@
     <div class="card-body">
       <!-- Conteudo do corpo do card-->
       <div class="row">
+
+        <div class="card" style="width: 10rem;">
+          <div class="card-body">
+            <h5 class="card-title">Users</h5>
+            <p class="card-text">{{ qtd_users }}</p>
+            <a href="{{ url_for('pagination_page') }}" class="card-link">List All</a>
+          </div>
+        </div>
+
         <div class="card" style="width: 10rem;">
           <div class="card-body">
             <h5 class="card-title">Images</h5>
@@ -20,6 +29,7 @@
             <a href="{{ url_for('pagination_list_files_page') }}" class="card-link">List All</a>
           </div>
         </div>
+
       </div>
 
     </div>
