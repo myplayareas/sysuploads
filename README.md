@@ -17,6 +17,11 @@ Install requirements
 pip3 install -r requirements.txt
 ```
 
+Freeze libs
+```bash
+pip freeze >requirements.txt
+```
+
 ## 2. Run application
 
 To run the application, it is necessary to install all the modules and extensions mentioned above. In addition, you need to set the following environment variables:

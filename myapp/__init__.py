@@ -21,6 +21,7 @@ ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
 
 # Configuracoes da instancia principal da aplicacao
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + data_base
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = 'ec9439cfc6c796ae2029594d'
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -49,3 +50,7 @@ from myapp import main
 from myapp import authentication
 from myapp import users
 from myapp import uploads
+from myapp import errors
+
+# To run when app starts
+#from myapp import tests
